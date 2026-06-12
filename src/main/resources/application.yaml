@@ -1,8 +1,5 @@
 spring:
   application:
-<<<<<<< HEAD
-    name: back
-=======
     name: back
   profiles:
     active: dev
@@ -28,4 +25,3 @@ logging:
     org.hibernate.orm.jdbc.bind: TRACE
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
->>>>>>> temp
