@@ -1,5 +1,7 @@
 package com.back.domain.post.post.controller;
 
+import com.back.domain.member.member.entity.Member;
+import com.back.domain.member.member.service.MemberService;
 import com.back.domain.post.post.entity.Post;
 import com.back.domain.post.post.service.PostService;
 import org.hamcrest.Matchers;
@@ -30,13 +32,16 @@ public class ApiV1PostControllerTest {
     @Autowired
     private PostService postService;
 
-
     @Test
-    @DisplayName("글 작성")
+    @DisplayName("글 쓰기")
     void t1() throws Exception {
+        Member actor = memberService.findByUsername("user1").get();
+        String actorApiKey = actor.getApiKey();
+
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
+                                .header("Authorization", "Bearer " + actorApiKey)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -65,11 +70,15 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성, without title")
+    @DisplayName("글 쓰기, without title")
     void t7() throws Exception {
+        Member actor = memberService.findByUsername("user1").get();
+        String actorApiKey = actor.getApiKey();
+
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
+                                .header("Authorization", "Bearer " + actorApiKey)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -92,11 +101,15 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성, without content")
+    @DisplayName("글 쓰기, without content")
     void t8() throws Exception {
+        Member actor = memberService.findByUsername("user1").get();
+        String actorApiKey = actor.getApiKey();
+
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
+                                .header("Authorization", "Bearer " + actorApiKey)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("""
                                         {
@@ -119,8 +132,11 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 작성, with wrong json syntax")
+    @DisplayName("글 쓰기, with wrong json syntax")
     void t9() throws Exception {
+
+        Member actor = memberService.findByUsername("user1").get();
+        String actorApiKey = actor.getApiKey();
 
         String wrongJsonBody = """
                 {
@@ -131,6 +147,7 @@ public class ApiV1PostControllerTest {
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/v1/posts")
+                                .header("Authorization", "Bearer " + actorApiKey)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(wrongJsonBody)
                 )
@@ -266,4 +283,7 @@ public class ApiV1PostControllerTest {
                     .andExpect(jsonPath("$[%d].content".formatted(i)).value(post.getContent()));
         }
     }
+
+    @Autowired
+    private MemberService memberService;
 }
