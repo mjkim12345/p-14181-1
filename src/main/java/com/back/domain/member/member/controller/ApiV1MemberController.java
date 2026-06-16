@@ -5,6 +5,7 @@ import com.back.domain.member.member.dto.MemberDto;
 import com.back.domain.member.member.entity.Member;
 import com.back.domain.member.member.service.MemberService;
 import com.back.global.exception.ServiceException;
+import com.back.global.rq.Rq;
 import com.back.global.rsData.RsData;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @Tag(name = "ApiV1MemberController", description = "API 회원 컨트롤러")
 public class ApiV1MemberController {
     private final MemberService memberService;
+    private final Rq rq;
 
 
     public record MemberJoinReqBody(
@@ -81,6 +83,18 @@ public class ApiV1MemberController {
                         new MemberDto(member),
                         member.getApiKey()
                 )
+        );
+    }
+
+    @GetMapping("/me")
+    public RsData<MemberDto> me() {
+
+        Member actor = rq.getActor();
+
+        return new RsData<>(
+                "200-1",
+                "%s님의 정보입니다.".formatted(actor.getName()),
+                new MemberDto(actor)
         );
     }
 }

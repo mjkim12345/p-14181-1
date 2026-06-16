@@ -1,5 +1,6 @@
 package com.back.domain.member.member.entity;
 
+import com.back.global.exception.ServiceException;
 import com.back.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
