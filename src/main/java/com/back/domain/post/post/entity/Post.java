@@ -2,6 +2,7 @@ package com.back.domain.post.post.entity;
 
 import com.back.domain.member.member.entity.Member;
 import com.back.domain.post.postComment.entity.PostComment;
+import com.back.global.exception.ServiceException;
 import com.back.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -21,7 +22,7 @@ import static jakarta.persistence.CascadeType.REMOVE;
 @NoArgsConstructor
 public class Post extends BaseEntity {
     @ManyToOne
-    private Member Author;
+    private Member author;
     private String title;
     private String content;
 
@@ -29,7 +30,7 @@ public class Post extends BaseEntity {
     private final List<PostComment> comments = new ArrayList<>();
 
     public Post(Member author, String title, String content) {
-        this.Author = author;
+        this.author = author;
         this.title = title;
         this.content = content;
     }
@@ -57,5 +58,15 @@ public class Post extends BaseEntity {
         if (postComment == null) return false;
 
         return comments.remove(postComment);
+    }
+
+    public void checkActorCanModify(Member actor) {
+        if (!author.equals(actor))
+            throw new ServiceException("403-1", "글 수정 권한이 없습니다.");
+    }
+
+    public void checkActorCanDelete(Member actor) {
+        if (!author.equals(actor))
+            throw new ServiceException("403-2", "글 삭제 권한이 없습니다.");
     }
 }
