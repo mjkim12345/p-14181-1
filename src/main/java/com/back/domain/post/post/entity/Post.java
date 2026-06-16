@@ -67,6 +67,6 @@ public class Post extends BaseEntity {
 
     public void checkActorCanDelete(Member actor) {
         if (!author.equals(actor))
-            throw new ServiceException("403-2", "%d번 글 삭제권한이 없습니다.".formatted(getId()));
+            throw new ServiceException("403-2", "%d번 글 삭제 권한이 없습니다.".formatted(getId()));
     }
 }
