@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.Arrays;
+
 @Component
 @RequiredArgsConstructor
 public class Rq {
@@ -20,13 +22,25 @@ public class Rq {
     public Member getActor() {
         String headerAuthorization = req.getHeader("Authorization");
 
-        if (headerAuthorization == null || headerAuthorization.isBlank())
+        String apiKey;
+
+        if (headerAuthorization != null && !headerAuthorization.isBlank()) {
+            if (!headerAuthorization.startsWith("Bearer "))
+                throw new ServiceException("401-2", "Authorization 헤더가 Bearer 형식이 아닙니다.");
+
+            apiKey = headerAuthorization.substring("Bearer ".length()).trim();
+        } else {
+            apiKey = req.getCookies() == null ?
+                    " " :
+                    Arrays.stream(req.getCookies())
+                            .filter(cookie -> "apiKey".equals(cookie.getName()))
+                            .map(Cookie::getValue)
+                            .findFirst()
+                            .orElse("");
+        }
+
+        if (apiKey.isBlank())
             throw new ServiceException("401-1", "로그인 후 이용해주세요.");
-
-        if (!headerAuthorization.startsWith("Bearer "))
-            throw new ServiceException("401-2", "Authorization 헤더가 Bearer 형식이 아닙니다.");
-
-        String apiKey = headerAuthorization.substring("Bearer ".length()).trim();
 
         Member member = memberService
                 .findByApiKey(apiKey)
